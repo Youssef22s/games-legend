@@ -1,0 +1,13 @@
+{
+    "cSpell.words": [
+        "checkpw",
+        "colspan",
+        "gensalt",
+        "hashpw",
+        "jsonify",
+        "Uncategorized"
+    ],
+    "python.analysis.extraPaths": [
+        "./backend/app"
+    ]
+}
