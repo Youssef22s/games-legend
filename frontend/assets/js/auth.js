@@ -17,13 +17,26 @@ if (registerForm) {
       const result = await response.json();
 
       if (response.ok) {
-        showAlert("Account created successfully! Redirecting...", "success");
+        Swal.fire({
+          title: "Success",
+          text: "Account created successfully! Redirecting...",
+          icon: "success",
+          showConfirmButton: false,
+        });
         setTimeout(() => (window.location.href = "login.html"), 2000);
       } else {
-        showAlert(result.error || "An error occurred");
+        Swal.fire({
+          title: "Error",
+          text: `${result.error || "An error occurred"}`,
+          icon: "error",
+        });
       }
     } catch (error) {
-      showAlert("Server connection error");
+      Swal.fire({
+        title: "Error",
+        text: `Server connection error`,
+        icon: "error",
+      });
     }
   });
 }
@@ -50,7 +63,12 @@ if (loginForm) {
         localStorage.setItem("token", result.token);
         localStorage.setItem("role", result.role);
         localStorage.setItem("username", result.username);
-        showAlert("Login successful!", "success");
+        Swal.fire({
+          title: "Success",
+          text: "Login successful!",
+          icon: "success",
+          showConfirmButton: false,
+        });
         setTimeout(() => {
           if (result.role === "admin") {
             window.location.href = "admin.html";
@@ -61,10 +79,18 @@ if (loginForm) {
           }
         }, 1000);
       } else {
-        showAlert(result.error || "Invalid login credentials");
+        Swal.fire({
+          title: "Error",
+          text: `${result.error || "Invalid login credentials"}`,
+          icon: "error",
+        });
       }
     } catch (error) {
-      showAlert("Server connection error");
+      Swal.fire({
+        title: "Error",
+        text: `Server connection error`,
+        icon: "error",
+      });
     }
   });
 }
