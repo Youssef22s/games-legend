@@ -144,3 +144,27 @@ def get_all_products():
             cursor.close()
         if "db" in locals():
             db.close()
+
+@products_bp.route('/<int:product_id>', methods=['GET'])
+def get_product(product_id):
+    try:
+        db = get_db_connection()
+        cursor = db.cursor(dictionary=True)
+        sql = """
+            SELECT p.*, c.name as category_name, u.username as vendor_name 
+            FROM products p 
+            LEFT JOIN categories c ON p.category_id = c.id
+            LEFT JOIN users u ON p.vendor_id = u.id
+            WHERE p.id = %s
+        """
+        cursor.execute(sql, (product_id,))
+        product = cursor.fetchone()
+        
+        if product:
+            return jsonify(product), 200
+        return jsonify({'error': 'Product not found'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'db' in locals(): db.close()

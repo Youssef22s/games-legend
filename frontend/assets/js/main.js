@@ -7,22 +7,58 @@ function updateNavbar() {
   if (!navLinks) return;
 
   if (token) {
+    const compareList = JSON.parse(localStorage.getItem("compareList")) || [];
+    const compareCount = compareList.length;
+
     navLinks.innerHTML = `
-            <li class="nav-item"><a class="nav-link text-light me-5" href="cart.html">Cart</a></li>
-            <li class="nav-item">
-              <button class="Btn" onclick="logout()">
-                <div class="sign"><svg viewBox="0 0 512 512"><path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"></path></svg></div>
-                <div class="text">Logout</div>
-              </button>
-            </li>
-        `;
+      <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
+        <a href="compare.html" class="btn btn-outline-light rounded-pill px-4 py-1 d-flex align-items-center gap-2 position-relative transition">
+          <i class="bi bi-arrow-left-right fs-6"></i>
+          <span class="fw-medium">Compare</span>
+            ${
+              compareCount > 0
+                ? `<span 
+            class="position-absolute badge rounded-pill bg-primary border border-2 border-dark translate-middle"
+            style="
+              top: 10%;
+              left: 95%;
+              font-size: 0.7rem;
+              padding: 0.3rem 0.5rem;
+            ">
+            ${compareCount}
+          </span>`
+                : ""
+            }
+        </a>
+      </li>
+
+      <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
+        <a href="cart.html" class="btn btn-outline-light rounded-pill px-4 py-1 d-flex align-items-center gap-2 position-relative transition">
+          <i class="bi bi-cart3 fs-6"></i>
+          <span class="fw-medium">Cart</span>
+        </a>
+      </li>
+
+      <li class="nav-item ms-lg-4 mt-3 mt-lg-0">
+        <button onclick="logout()" class="btn btn-danger rounded-pill px-4 py-1 d-flex align-items-center gap-2 transition fw-medium shadow-sm border-0">
+          <i class="bi bi-box-arrow-right fs-6"></i>
+          <span>Logout</span>
+        </button>
+      </li>
+    `;
   } else {
     navLinks.innerHTML = `
-            <li class="nav-item"><a class="nav-link text-light" href="login.html">Sign in</a></li>
-            <li class="nav-item">
-                <a class="btn btn-primary rounded-pill px-4 ms-2" href="register.html">Create Account</a>
-            </li>
-        `;
+        <li class="nav-item">
+            <a class="nav-link text-light px-3 transition" href="login.html">
+                Sign in
+            </a>
+        </li>
+        <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+            <a class="btn btn-primary rounded-pill px-4 transition shadow-sm fw-medium" href="register.html">
+                Create Account
+            </a>
+        </li>
+    `;
   }
 }
 
@@ -99,14 +135,26 @@ async function loadPublicProducts() {
 
     if (res.ok && products.length > 0) {
       products.forEach((p) => {
+        const isAdded = compareList.includes(p.id);
         container.innerHTML += `
         <div class="col-md-6 col-lg-4">
           <div class="card product-card h-100 rounded-4 overflow-hidden position-relative">
         
-            <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-3 rounded-pill shadow-sm z-3 transition" 
-                style="backdrop-filter: blur(5px); background-color: rgba(255, 255, 255, 0.9);" 
-                title="Compare this game">
-              <i class="bi bi-arrow-left-right me-1 text-dark"></i> <span class="text-dark fw-medium small">Compare</span>
+            <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-3 rounded-pill shadow-sm z-3 transition btn-compare" 
+              data-id="${p.id}"
+              onclick="toggleCompare(${p.id})"
+              style="backdrop-filter: blur(5px); background-color: rgba(255, 255, 255, 0.9);" 
+              title="Compare this game">
+                <i class="bi ${
+                  isAdded
+                    ? "bi-x-circle text-danger"
+                    : "bi-arrow-left-right text-dark"
+                } me-1 toggle-icon"></i> 
+                <span class="${
+                  isAdded ? "text-danger" : "text-dark"
+                } fw-medium small toggle-text">${
+          isAdded ? "Remove" : "Compare"
+        }</span>
             </button>
             
             <div class="card-img-placeholder">
@@ -171,6 +219,49 @@ async function loadPublicProducts() {
   }
 }
 
+let compareList = JSON.parse(localStorage.getItem("compareList")) || [];
+
+function toggleCompare(productId) {
+  const index = compareList.indexOf(productId);
+  const btn = document.querySelector(`.btn-compare[data-id="${productId}"]`);
+
+  if (index > -1) {
+    compareList.splice(index, 1);
+    updateButtonStyle(btn, false);
+  } else {
+    if (compareList.length >= 4) {
+      Swal.fire({
+        title: "Limit reached!",
+        text: "You can only compare up to 4 products.",
+        icon: "error",
+      });
+      return;
+    }
+    compareList.push(productId);
+
+    updateButtonStyle(btn, true);
+  }
+  localStorage.setItem("compareList", JSON.stringify(compareList));
+  updateNavbar();
+}
+
+function updateButtonStyle(btn, isActive) {
+  if (!btn) return;
+
+  const icon = btn.querySelector(".toggle-icon");
+  const textSpan = btn.querySelector(".toggle-text");
+
+  if (isActive) {
+    icon.className = "bi bi-x-circle text-danger me-1 toggle-icon";
+    textSpan.className = "text-danger fw-medium small toggle-text";
+    textSpan.innerText = "Remove";
+  } else {
+    icon.className = "bi bi-arrow-left-right text-dark me-1 toggle-icon";
+    textSpan.className = "text-dark fw-medium small toggle-text";
+    textSpan.innerText = "Compare";
+  }
+}
+
 async function addToCart(productId) {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role") || "buyer";
@@ -183,7 +274,7 @@ async function addToCart(productId) {
   if (role !== "buyer") {
     Swal.fire({
       text: "Only buyers can add products to the cart!",
-      icon: "error"
+      icon: "error",
     });
     return;
   }
@@ -203,12 +294,12 @@ async function addToCart(productId) {
     if (res.ok) {
       Swal.fire({
         text: "Product added to cart successfully!",
-        icon: "success"
+        icon: "success",
       });
     } else {
       Swal.fire({
         text: `${data.error}`,
-        icon: "error"
+        icon: "error",
       });
     }
   } catch (err) {
