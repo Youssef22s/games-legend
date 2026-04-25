@@ -151,7 +151,95 @@ async function deleteVendor(id) {
   });
 }
 
+async function fetchAdminNotifications() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/notifications/`, { headers: authHeaders });
+    if (response.ok) {
+      const data = await response.json();
+      updateNotificationUI(data.notifications, data.unread_count);
+    }
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+  }
+}
+
+function updateNotificationUI(notifications, unreadCount) {
+  const badge = document.getElementById("notif-badge");
+  const list = document.getElementById("notif-list");
+
+  if (unreadCount > 0) {
+    badge.style.display = "inline-block";
+    badge.innerText = unreadCount > 99 ? "99+" : unreadCount;
+  } else {
+    badge.style.display = "none";
+  }
+
+  if (!notifications || notifications.length === 0) {
+    list.innerHTML = `<li><span class="dropdown-item text-center text-muted small py-4">No notifications yet.</span></li>`;
+    return;
+  }
+
+  list.innerHTML = notifications.map(n => {
+    const isUnread = !n.is_read;
+    const dateStr = new Date(n.created_at).toLocaleString('en-GB', {
+      dateStyle: 'short',
+      timeStyle: 'short',
+      timeZone: 'Africa/Cairo'
+    });
+
+    return `
+      <li>
+        <a class="dropdown-item border-bottom py-3 ${isUnread ? 'bg-light' : ''}" href="#" onclick="markNotifAsRead(${n.id}, this, event)">
+          <div class="d-flex align-items-start gap-2">
+            ${isUnread ? '<i class="bi bi-circle-fill text-primary mt-1" style="font-size: 0.5rem;"></i>' : '<div style="width: 0.5rem;"></div>'}
+            <div class="d-flex flex-column text-wrap">
+              <span class="small ${isUnread ? 'fw-bold text-dark' : 'text-muted'}">${n.message}</span>
+              <small class="text-secondary mt-1" style="font-size: 0.75rem;">${n.created_at}</small>
+            </div>
+          </div>
+        </a>
+      </li>
+    `;
+  }).join('');
+}
+
+async function markNotifAsRead(notifId, element, event) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  element.classList.remove('bg-light');
+  const dot = element.querySelector('.bi-circle-fill');
+  if (dot) dot.style.visibility = 'hidden';
+  
+  const text = element.querySelector('span.small');
+  if (text) {
+    text.classList.remove('fw-bold', 'text-dark');
+    text.classList.add('text-muted');
+  }
+
+  const badge = document.getElementById("notif-badge");
+  let count = parseInt(badge.innerText);
+  if (!isNaN(count) && count > 0) {
+    count--;
+    badge.innerText = count;
+    if (count === 0) badge.style.display = "none";
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/notifications/${notifId}/read`, {
+      method: "PUT",
+      headers: authHeaders,
+    });
+    if (response.ok) fetchAdminNotifications();
+  } catch (error) {
+    console.error("Error marking as read:", error);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   loadDashboardStats();
   loadVendors();
+
+  fetchAdminNotifications();
+  setInterval(fetchAdminNotifications, 30000);
 });

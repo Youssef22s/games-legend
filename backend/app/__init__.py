@@ -37,4 +37,8 @@ def create_app():
 
     app.register_blueprint(buyer_profile_bp, url_prefix="/api/buyer_profile")
 
+    from .notifications import notifications_bp
+
+    app.register_blueprint(notifications_bp, url_prefix="/api/notifications")
+
     return app

@@ -5,6 +5,8 @@
         "gensalt",
         "hashpw",
         "jsonify",
+        "lastrowid",
+        "notif",
         "Swal",
         "Uncategorized"
     ],
