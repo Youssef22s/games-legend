@@ -2,6 +2,7 @@ const API_BASE_URL = "http://127.0.0.1:5000/api";
 
 function updateNavbar() {
   const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
   const navLinks = document.getElementById("nav-links");
 
   if (!navLinks) return;
@@ -11,33 +12,42 @@ function updateNavbar() {
     const compareCount = compareList.length;
 
     navLinks.innerHTML = `
-      <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
-        <a href="compare.html" class="btn btn-outline-light rounded-pill px-4 py-1 d-flex align-items-center gap-2 position-relative transition">
-          <i class="bi bi-arrow-left-right fs-6"></i>
-          <span class="fw-medium">Compare</span>
-            ${
-              compareCount > 0
-                ? `<span 
-            class="position-absolute badge rounded-pill bg-primary border border-2 border-dark translate-middle"
-            style="
-              top: 10%;
-              left: 95%;
-              font-size: 0.7rem;
-              padding: 0.3rem 0.5rem;
-            ">
-            ${compareCount}
-          </span>`
-                : ""
-            }
-        </a>
-      </li>
 
-      <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
-        <a href="cart.html" class="btn btn-outline-light rounded-pill px-4 py-1 d-flex align-items-center gap-2 position-relative transition">
-          <i class="bi bi-cart3 fs-6"></i>
-          <span class="fw-medium">Cart</span>
-        </a>
-      </li>
+    ${role === "buyer" ? `<li class="nav-item ms-lg-3 mt-3 mt-lg-0">
+    <a href="compare.html" class="btn btn-outline-light rounded-pill px-4 py-1 d-flex align-items-center gap-2 position-relative transition">
+      <i class="bi bi-arrow-left-right fs-6"></i>
+      <span class="fw-medium">Compare</span>
+        ${
+          compareCount > 0
+            ? `<span 
+        class="position-absolute badge rounded-pill bg-primary border border-2 border-dark translate-middle"
+        style="
+          top: 10%;
+          left: 95%;
+          font-size: 0.7rem;
+          padding: 0.3rem 0.5rem;
+        ">
+        ${compareCount}
+      </span>`
+            : ""
+        }
+    </a>
+  </li>
+
+  <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
+    <a href="cart.html" class="btn btn-outline-light rounded-pill px-4 py-1 d-flex align-items-center gap-2 position-relative transition">
+      <i class="bi bi-cart3 fs-6"></i>
+      <span class="fw-medium">Cart</span>
+    </a>
+  </li>
+
+  <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
+    <a href="profile.html" class="btn btn-outline-light rounded-pill px-4 py-1 d-flex align-items-center gap-2 position-relative transition">
+      <i class="fa-solid fa-user fs-6"></i>
+      <span class="fw-medium">Profile</span>
+    </a>
+  </li>` : ""}
+      
 
       <li class="nav-item ms-lg-4 mt-3 mt-lg-0">
         <button onclick="logout()" class="btn btn-danger rounded-pill px-4 py-1 d-flex align-items-center gap-2 transition fw-medium shadow-sm border-0">
@@ -120,6 +130,7 @@ function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("role");
   localStorage.removeItem("username");
+  localStorage.removeItem("compareList");
   window.location.href = "login.html";
 }
 
@@ -134,28 +145,23 @@ async function loadPublicProducts() {
     container.innerHTML = "";
 
     if (res.ok && products.length > 0) {
+      const role = localStorage.getItem("role");
       products.forEach((p) => {
         const isAdded = compareList.includes(p.id);
         container.innerHTML += `
         <div class="col-md-6 col-lg-4">
           <div class="card product-card h-100 rounded-4 overflow-hidden position-relative">
         
-            <button class="btn btn-light btn-sm position-absolute top-0 end-0 m-3 rounded-pill shadow-sm z-3 transition btn-compare" 
-              data-id="${p.id}"
-              onclick="toggleCompare(${p.id})"
-              style="backdrop-filter: blur(5px); background-color: rgba(255, 255, 255, 0.9);" 
-              title="Compare this game">
-                <i class="bi ${
-                  isAdded
-                    ? "bi-x-circle text-danger"
-                    : "bi-arrow-left-right text-dark"
-                } me-1 toggle-icon"></i> 
-                <span class="${
-                  isAdded ? "text-danger" : "text-dark"
-                } fw-medium small toggle-text">${
-          isAdded ? "Remove" : "Compare"
-        }</span>
-            </button>
+            ${role === "buyer" ? `<button class="btn btn-light btn-sm position-absolute top-0 end-0 m-3 rounded-pill shadow-sm z-3 transition btn-compare" 
+                                    data-id="${p.id}"
+                                    onclick="toggleCompare(${p.id})"
+                                    style="backdrop-filter: blur(5px); background-color: rgba(255, 255, 255, 0.9);" 
+                                    title="Compare this game">
+                                      <i class="bi ${isAdded ? "bi-x-circle text-danger" : "bi-arrow-left-right text-dark"} me-1 toggle-icon"></i> 
+                                      <span class="${isAdded ? "text-danger" : "text-dark"} fw-medium small toggle-text">${isAdded ? "Remove" : "Compare"}</span>
+                                  </button>`
+                                : ""
+            }
             
             <div class="card-img-placeholder">
                 <i class="bi bi-joystick" style="font-size: 4rem;"></i>

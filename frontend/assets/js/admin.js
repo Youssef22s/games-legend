@@ -20,7 +20,7 @@ async function loadDashboardStats() {
       document.getElementById("products-count").innerText = data.products_count;
     } else {
       Swal.fire({
-        title: "Access denied",
+        title: `${response.statusText}`,
         text: "You do not have permission to access this page",
         icon: "error",
       }).then(() => {

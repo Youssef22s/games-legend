@@ -29,9 +29,12 @@ def create_app():
 
     app.register_blueprint(cart_bp, url_prefix="/api/cart")
 
-
     from .payment import payment_bp
 
     app.register_blueprint(payment_bp, url_prefix="/api/payment")
+
+    from .buyer_profile import buyer_profile_bp
+
+    app.register_blueprint(buyer_profile_bp, url_prefix="/api/buyer_profile")
 
     return app

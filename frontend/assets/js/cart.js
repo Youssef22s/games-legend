@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-async function removeFromCart(cartId, itemPrice) {
+async function removeFromCart(cartId) {
   Swal.fire({
     title: "Are you sure?",
     icon: "warning",
