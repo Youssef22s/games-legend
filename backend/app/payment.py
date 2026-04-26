@@ -113,15 +113,19 @@ def finalize_order(current_user):
 
         cursor.execute("DELETE FROM cart WHERE buyer_id = %s", (buyer_id,))
 
-        cursor.execute("SELECT id FROM users WHERE role = 'admin' LIMIT 1") 
+        cursor.execute("SELECT id FROM users WHERE role = 'admin' LIMIT 1")
         admin = cursor.fetchone()
-        
+
         if admin:
-            notification_message = f"New order #{order_id} has been placed for ${total_amount}"
-            cursor.execute("""
-                INSERT INTO notifications (user_id, message) 
-                VALUES (%s, %s)
-            """, (admin['id'], notification_message))
+            notification_message = (
+                f"New order #{order_id} has been placed for ${total_amount}"
+            )
+            cursor.execute(
+                """
+                    INSERT INTO notifications (user_id, message, order_id) 
+                    VALUES (%s, %s, %s)""",
+                (admin["id"], notification_message, order_id),
+            )
 
         db.commit()
 

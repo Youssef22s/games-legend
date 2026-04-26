@@ -98,3 +98,49 @@ def delete_vendor(id):
             cursor.close()
         if "db" in locals():
             db.close()
+
+
+@admin_bp.route("/orders/<int:order_id>", methods=["GET"])
+@admin_required
+def get_order_details(order_id):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    try:
+        cursor.execute(
+            """
+            SELECT o.id, o.total_amount, o.status, o.created_at, 
+                   u.username as buyer_name, u.email as buyer_email
+            FROM orders o
+            JOIN users u ON o.buyer_id = u.id
+            WHERE o.id = %s
+        """,
+            (order_id,),
+        )
+
+        order = cursor.fetchone()
+
+        if not order:
+            return jsonify({"error": "Order not found"}), 404
+
+        cursor.execute(
+            """
+            SELECT p.title, oi.quantity, oi.price_at_purchase
+            FROM order_items oi
+            JOIN products p ON oi.product_id = p.id
+            WHERE oi.order_id = %s
+        """,
+            (order_id,),
+        )
+
+        items = cursor.fetchall()
+
+        order["items"] = items
+
+        return jsonify(order), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        db.close()
