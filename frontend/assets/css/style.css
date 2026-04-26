@@ -64,3 +64,10 @@
 .btn {
   transition: all 0.2s ease;
 }
+
+.desc {
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 250px;
+}

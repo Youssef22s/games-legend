@@ -56,6 +56,10 @@ async function loadVendors() {
                         <td class="fw-medium text-dark">${vendor.username}</td>
                         <td class="text-muted small">${vendor.email}</td>
                         <td class="text-end">
+                            <button class="btn btn-outline-primary btn-sm rounded-pill px-3 me-1" 
+                                    onclick="window.location.href='admin_vendor_details.html?id=${vendor.id}'">
+                                <i class="bi bi-eye me-1"></i> View
+                            </button>
                             <button class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="deleteVendor(${vendor.id})">
                                 <i class="bi bi-trash3 me-1"></i> Delete
                             </button>
