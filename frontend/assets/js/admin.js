@@ -15,9 +15,13 @@ async function loadDashboardStats() {
     });
     const data = await response.json();
 
+    console.log("data", data);
+
     if (response.ok) {
-      document.getElementById("users-count").innerText = data.users_count;
+      document.getElementById("vendors-count").innerText = data.vendors_count;
+      document.getElementById("buyers-count").innerText = data.buyers_count;
       document.getElementById("products-count").innerText = data.products_count;
+      document.getElementById("orders-count").innerText = data.orders_count;
     } else {
       Swal.fire({
         title: `${response.statusText}`,
@@ -386,6 +390,27 @@ function goToPage(page) {
   currentPage = page;
   renderOrders();
   renderPagination();
+}
+
+function switchSection(sectionName) {
+  const allSections = document.querySelectorAll(".admin-section");
+  allSections.forEach((section) => {
+    section.classList.add("d-none");
+  });
+  const targetSection = document.getElementById("section-" + sectionName);
+  if (targetSection) {
+    targetSection.classList.remove("d-none");
+  }
+
+  document.querySelectorAll(".nav-section-btn").forEach((btn) => {
+    if (btn.id === `btn-${sectionName}`) {
+      btn.classList.add("btn-primary", "text-white");
+      btn.classList.remove("bg-transparent", "text-secondary");
+    } else {
+      btn.classList.remove("btn-primary", "text-white");
+      btn.classList.add("bg-transparent", "text-secondary");
+    }
+  });
 }
 
 document.addEventListener("DOMContentLoaded", () => {

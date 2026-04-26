@@ -14,18 +14,37 @@ def get_dashboard_stats():
         db = get_db_connection()
         cursor = db.cursor(dictionary=True)
 
-        cursor.execute("SELECT COUNT(*) as users_count FROM users")
-        users_count = cursor.fetchone()["users_count"]
-
         cursor.execute("SELECT COUNT(*) as products_count FROM products")
         products_count = cursor.fetchone()["products_count"]
 
+        cursor.execute(
+            "SELECT COUNT(*) as vendors_count FROM users WHERE role = 'vendor'"
+        )
+        vendors_count = cursor.fetchone()["vendors_count"]
+
+        cursor.execute(
+            "SELECT COUNT(*) as buyers_count FROM users WHERE role = 'buyer'"
+        )
+        buyers_count = cursor.fetchone()["buyers_count"]
+
+        cursor.execute("SELECT COUNT(*) as orders_count FROM orders")
+        orders_count = cursor.fetchone()["orders_count"]
+
         return (
-            jsonify({"users_count": users_count, "products_count": products_count}),
+            jsonify(
+                {
+                    "products_count": products_count,
+                    "vendors_count": vendors_count,
+                    "buyers_count": buyers_count,
+                    "orders_count": orders_count,
+                }
+            ),
             200,
         )
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
     finally:
         if "cursor" in locals():
             cursor.close()
