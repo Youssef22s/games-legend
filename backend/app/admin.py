@@ -100,6 +100,30 @@ def delete_vendor(id):
             db.close()
 
 
+@admin_bp.route("/orders", methods=["GET"])
+@admin_required
+def get_all_orders():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    try:
+        cursor.execute(
+            """
+            SELECT o.id, o.total_amount, o.status, o.created_at, u.username as buyer_name
+            FROM orders o
+            JOIN users u ON o.buyer_id = u.id
+            ORDER BY o.created_at DESC
+        """
+        )
+        orders = cursor.fetchall()
+        return jsonify(orders), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        db.close()
+
+
 @admin_bp.route("/orders/<int:order_id>", methods=["GET"])
 @admin_required
 def get_order_details(order_id):

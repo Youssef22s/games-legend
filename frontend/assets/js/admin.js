@@ -250,9 +250,148 @@ async function markNotifAsRead(notifId, orderId, event) {
   }
 }
 
+let allOrders = [];
+let currentPage = 1;
+const ordersPerPage = 5;
+
+async function loadAllOrders() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/admin/orders`, {
+      headers: authHeaders,
+    });
+
+    const orders = await response.json();
+    const tbody = document.getElementById("orders-list");
+
+    if (response.ok) {
+      allOrders = orders;
+      currentPage = 1;
+      renderOrders();
+      renderPagination();
+    }
+  } catch (error) {
+    console.error("Error loading orders:", error);
+  }
+}
+
+function renderOrders() {
+  const tbody = document.getElementById("orders-list");
+  tbody.innerHTML = "";
+
+  if (allOrders.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="text-center text-muted py-4">
+          No orders found.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  const start = (currentPage - 1) * ordersPerPage;
+  const end = start + ordersPerPage;
+  const paginatedOrders = allOrders.slice(start, end);
+
+  paginatedOrders.forEach((order) => {
+    const statusClass =
+      order.status === "completed"
+        ? "bg-success bg-opacity-10 text-success border border-success-subtle"
+        : "bg-warning bg-opacity-10 text-warning border border-warning-subtle";
+
+    tbody.innerHTML += `
+      <tr>
+        <td>
+          <span class="badge bg-light text-dark border px-2 py-1">
+            #${order.id}
+          </span>
+        </td>
+        <td class="fw-medium text-dark">${order.buyer_name}</td>
+        <td class="text-muted small">
+          ${new Date(order.created_at).toLocaleDateString()}
+        </td>
+        <td class="fw-bold">$${order.total_amount}</td>
+        <td>
+          <span class="badge ${statusClass} rounded-pill px-2 py-1 fw-medium text-capitalize fs-8 shadow-sm mb-2">
+            ${order.status}
+          </span>
+        </td>
+        <td class="text-end">
+          <button class="btn btn-outline-primary btn-sm rounded-pill px-3"
+            onclick="window.location.href='admin_order_details.html?id=${
+              order.id
+            }'">
+            <i class="bi bi-eye me-1"></i> View
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function renderPagination() {
+  const totalPages = Math.ceil(allOrders.length / ordersPerPage);
+  const pagination = document.getElementById("pagination");
+
+  if (totalPages <= 1) {
+    pagination.innerHTML = "";
+    return;
+  }
+
+  let html = "";
+
+  const prevDisabled = currentPage === 1 ? "disabled" : "";
+  html += `
+    <li class="page-item ${prevDisabled}">
+      <button class="page-link border-0 rounded-circle text-secondary bg-transparent fw-bold" onclick="goToPage(${
+        currentPage - 1
+      })">
+      <i class="fa-solid fa-angle-left"></i>
+      </button>
+    </li>
+  `;
+
+  for (let i = 1; i <= totalPages; i++) {
+    const isActive = i === currentPage;
+    const btnClass = isActive
+      ? "btn-primary shadow text-white fw-bold"
+      : "btn-white bg-white shadow-sm text-dark border-light-subtle";
+
+    html += `
+      <li class="page-item">
+        <button class="btn rounded-circle d-flex align-items-center justify-content-center transition ${btnClass}" 
+                style="width: 40px; height: 40px;" 
+                onclick="goToPage(${i})">
+          ${i}
+        </button>
+      </li>
+    `;
+  }
+
+  const nextDisabled = currentPage === totalPages ? "disabled" : "";
+  html += `
+    <li class="page-item ${nextDisabled}">
+      <button class="page-link border-0 rounded-circle text-secondary bg-transparent fw-bold" onclick="goToPage(${
+        currentPage + 1
+      })">
+      <i class="fa-solid fa-angle-right"></i>
+      </button>
+    </li>
+  `;
+
+  pagination.innerHTML = html;
+}
+
+function goToPage(page) {
+  currentPage = page;
+  renderOrders();
+  renderPagination();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   loadDashboardStats();
   loadVendors();
+  loadAllOrders();
 
   fetchAdminNotifications();
   setInterval(fetchAdminNotifications, 30000);

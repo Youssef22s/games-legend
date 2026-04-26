@@ -29,49 +29,101 @@
           <i class="bi bi-shield-lock text-primary fs-4"></i>
           <span>Admin Panel</span>
         </div>
-        <div class="d-flex align-items-center">
-          <li class="nav-item dropdown ms-lg-2 mt-3 mt-lg-0">
-            <a class="btn btn-outline-light rounded-circle p-2 position-relative transition d-flex align-items-center justify-content-center" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px;">
-              <i class="bi bi-bell fs-5"></i>
-              <span id="notif-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-2 border-dark shadow-sm" style="display: none; font-size: 0.65rem; padding: 0.25rem 0.45rem;">
-                0
-              </span>
-            </a>
-          
-            <div class="dropdown-menu dropdown-menu-end shadow rounded-4 border-0 mt-2 p-0" aria-labelledby="notifDropdown" style="width: 400px; overflow: hidden;">
-              <div class="d-flex justify-content-between align-items-center bg-light border-bottom px-3 py-3">
-                <h6 class="fw-bold text-dark mb-0"><i class="bi bi-bell-fill text-primary me-2"></i>Notifications</h6>
+
+        <button
+          class="navbar-toggler shadow-none border-0"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarContent"
+          aria-controls="navbarContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+          <ul
+            class="navbar-nav ms-auto align-items-lg-center gap-3 gap-lg-0 mt-3 mt-lg-0 pb-3 pb-lg-0"
+          >
+            <li class="nav-item dropdown ms-lg-2">
+              <a
+                class="btn btn-outline-light rounded-circle p-2 position-relative transition d-flex align-items-center justify-content-center"
+                href="#"
+                id="notifDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                style="width: 40px; height: 40px"
+              >
+                <i class="bi bi-bell fs-5"></i>
+                <span
+                  id="notif-badge"
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-2 border-dark shadow-sm"
+                  style="
+                    display: none;
+                    font-size: 0.65rem;
+                    padding: 0.25rem 0.45rem;
+                  "
+                >
+                  0
+                </span>
+              </a>
+
+              <div
+                class="dropdown-menu dropdown-menu-end shadow rounded-4 border-0 mt-2 p-0"
+                aria-labelledby="notifDropdown"
+                style="width: 400px; max-width: 90vw; overflow: hidden"
+              >
+                <div
+                  class="d-flex justify-content-between align-items-center bg-light border-bottom px-3 py-3"
+                >
+                  <h6 class="fw-bold text-dark mb-0">
+                    <i class="bi bi-bell-fill text-primary me-2"></i
+                    >Notifications
+                  </h6>
+                </div>
+
+                <ul
+                  id="notif-list"
+                  class="list-unstyled mb-0"
+                  style="max-height: 380px; overflow-y: auto"
+                >
+                  <li>
+                    <span
+                      class="dropdown-item text-center text-muted small py-4"
+                    >
+                      <div
+                        class="spinner-border spinner-border-sm text-primary me-2"
+                        role="status"
+                      ></div>
+                      Loading...
+                    </span>
+                  </li>
+                </ul>
               </div>
-              
-              <ul id="notif-list" class="list-unstyled mb-0" style="max-height: 380px; overflow-y: auto;">
-                <li>
-                  <span class="dropdown-item text-center text-muted small py-4">
-                      <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div> Loading...
-                  </span>
-                </li>
-              </ul>
-            </div>
-          </li>
+            </li>
 
-          <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
-            <a
-              href="index.html"
-              class="btn btn-outline-light rounded-pill px-4 py-1 d-flex align-items-center gap-2 position-relative transition"
-            >
-              <i class="fa-solid fa-house fs-6 text-white"></i>
-              <span class="fw-medium">Home</span>
-            </a>
-          </li>
+            <li class="nav-item ms-lg-3">
+              <a
+                href="index.html"
+                class="btn btn-outline-light rounded-pill px-4 py-1 d-flex align-items-center justify-content-center gap-2 position-relative transition"
+              >
+                <i class="fa-solid fa-house fs-6 text-white"></i>
+                <span class="fw-medium">Home</span>
+              </a>
+            </li>
 
-          <li class="nav-item ms-lg-4 mt-3 mt-lg-0">
-            <button
-              onclick="logout()"
-              class="btn btn-danger rounded-pill px-4 py-1 d-flex align-items-center gap-2 transition fw-medium shadow-sm border-0"
-            >
-              <i class="bi bi-box-arrow-right fs-6"></i>
-              <span>Logout</span>
-            </button>
-          </li>
+            <li class="nav-item ms-lg-4">
+              <button
+                onclick="logout()"
+                class="btn btn-danger rounded-pill px-4 py-1 d-flex align-items-center justify-content-center gap-2 transition fw-medium shadow-sm border-0 w-100"
+              >
+                <i class="bi bi-box-arrow-right fs-6"></i>
+                <span>Logout</span>
+              </button>
+            </li>
+          </ul>
         </div>
       </div>
     </nav>
@@ -217,6 +269,59 @@
                   </thead>
                   <tbody id="vendors-list" class="border-top-0"></tbody>
                 </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-12">
+          <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+              <h5 class="fw-bold mb-0">
+                <i class="bi bi-cart-check text-primary me-2"></i>
+                Orders Directory
+              </h5>
+            </div>
+
+            <div class="card-body p-4">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle border-top">
+                  <thead class="table-light">
+                    <tr>
+                      <th
+                        class="text-muted fw-semibold py-3 border-0 rounded-start"
+                      >
+                        Order ID
+                      </th>
+                      <th class="text-muted fw-semibold py-3 border-0">
+                        Customer
+                      </th>
+                      <th class="text-muted fw-semibold py-3 border-0">Date</th>
+                      <th class="text-muted fw-semibold py-3 border-0">
+                        Total
+                      </th>
+                      <th class="text-muted fw-semibold py-3 border-0">
+                        Status
+                      </th>
+                      <th
+                        class="text-muted fw-semibold py-3 border-0 rounded-end text-end"
+                      >
+                        Action
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="orders-list" class="border-top-0"></tbody>
+                </table>
+              </div>
+
+              <div class="d-flex justify-content-center mt-4 mb-2">
+                <ul
+                  class="pagination align-items-center gap-2 mb-0 border-0"
+                  id="pagination"
+                ></ul>
               </div>
             </div>
           </div>
