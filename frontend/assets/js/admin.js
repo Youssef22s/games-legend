@@ -417,10 +417,154 @@ function switchSection(sectionName) {
   });
 }
 
+async function loadCategories() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/admin/categories`, {
+      headers: authHeaders,
+    });
+    const categories = await res.json();
+    const tbody = document.getElementById("categories-list");
+    tbody.innerHTML = "";
+
+    if (res.ok) {
+      if (categories.length === 0) {
+        tbody.innerHTML =
+          '<tr><td colspan="3" class="text-center text-muted">No categories found.</td></tr>';
+        return;
+      }
+      categories.forEach((cat) => {
+        tbody.innerHTML += `
+          <tr>
+            <td><span class="badge bg-light text-dark border px-2 py-1">#${cat.id}</span></td>
+            <td class="fw-medium text-dark">${cat.name}</td>
+            <td class="text-end">
+              <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 me-1" onclick="editCategory(${cat.id}, '${cat.name}')">
+                <i class="bi bi-pencil me-1"></i> Edit
+              </button>
+              <button class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="deleteCategory(${cat.id})">
+                <i class="bi bi-trash3 me-1"></i> Delete
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+  } catch (err) {
+    console.error("Error loading categories:", err);
+  }
+}
+
+document
+  .getElementById("addCategoryForm")
+  ?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const nameInput = document.getElementById("cat-name");
+    const name = nameInput.value.trim();
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/admin/categories`, {
+        method: "POST",
+        headers: authHeaders,
+        body: JSON.stringify({ name }),
+      });
+
+      if (res.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Added!",
+          text: "Category has been created.",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        nameInput.value = "";
+        loadCategories();
+      } else {
+        const data = await res.json();
+        Swal.fire("Error", data.error || "Failed to add category", "error");
+      }
+    } catch (err) {
+      console.error("Error adding category:", err);
+    }
+  });
+
+async function editCategory(id, currentName) {
+  const { value: newName } = await Swal.fire({
+    title: "Edit Category",
+    input: "text",
+    inputValue: currentName,
+    showCancelButton: true,
+    inputValidator: (value) => {
+      if (!value) {
+        return "You need to write something!";
+      }
+    },
+  });
+
+  if (newName && newName !== currentName) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/admin/categories/${id}`, {
+        method: "PUT",
+        headers: authHeaders,
+        body: JSON.stringify({ name: newName }),
+      });
+
+      if (res.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Updated!",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        loadCategories();
+      } else {
+        Swal.fire("Error", "Failed to update category", "error");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
+
+async function deleteCategory(id) {
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#dc3545",
+    confirmButtonText: "Yes, delete it!",
+  });
+
+  if (result.isConfirmed) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/admin/categories/${id}`, {
+        method: "DELETE",
+        headers: authHeaders,
+      });
+
+      if (res.ok) {
+        Swal.fire("Deleted!", "Category has been deleted.", "success");
+        loadCategories();
+      } else {
+        const data = await res.json();
+        Swal.fire(
+          "Error",
+          data.error ||
+            "Failed to delete. Make sure it has no linked products.",
+          "error"
+        );
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   loadDashboardStats();
   loadVendors();
   loadAllOrders();
+  loadCategories();
 
   fetchAdminNotifications();
   setInterval(fetchAdminNotifications, 30000);

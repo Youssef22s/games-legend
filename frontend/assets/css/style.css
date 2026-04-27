@@ -71,3 +71,11 @@
   overflow-wrap: break-word;
   max-width: 250px;
 }
+
+.nav-tabs-scroll {
+  overflow-x: auto;
+}
+
+.nav-tabs-scroll::-webkit-scrollbar {
+  display: none;
+}

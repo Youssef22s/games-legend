@@ -243,3 +243,84 @@ def get_vendor_details(vendor_id):
     finally:
         cursor.close()
         db.close()
+
+
+@admin_bp.route("/categories", methods=["GET"])
+@admin_required
+def get_categories():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT id, name FROM categories ORDER BY id DESC")
+        categories = cursor.fetchall()
+        return jsonify(categories), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        db.close()
+
+
+@admin_bp.route("/categories", methods=["POST"])
+@admin_required
+def add_category():
+    data = request.get_json()
+    name = data.get("name")
+
+    if not name:
+        return jsonify({"error": "Category name is required"}), 400
+
+    db = get_db_connection()
+    cursor = db.cursor()
+    try:
+        cursor.execute("INSERT INTO categories (name) VALUES (%s)", (name,))
+        db.commit()
+        return (
+            jsonify({"message": "Category added successfully", "id": cursor.lastrowid}),
+            201,
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        db.close()
+
+
+@admin_bp.route("/categories/<int:category_id>", methods=["PUT"])
+@admin_required
+def update_category(category_id):
+    data = request.get_json()
+    name = data.get("name")
+
+    if not name:
+        return jsonify({"error": "Category name is required"}), 400
+
+    db = get_db_connection()
+    cursor = db.cursor()
+    try:
+        cursor.execute(
+            "UPDATE categories SET name = %s WHERE id = %s", (name, category_id)
+        )
+        db.commit()
+        return jsonify({"message": "Category updated successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        db.close()
+
+
+@admin_bp.route("/categories/<int:category_id>", methods=["DELETE"])
+@admin_required
+def delete_category(category_id):
+    db = get_db_connection()
+    cursor = db.cursor()
+    try:
+        cursor.execute("DELETE FROM categories WHERE id = %s", (category_id,))
+        db.commit()
+        return jsonify({"message": "Category deleted successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+        db.close()

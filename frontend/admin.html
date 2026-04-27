@@ -116,32 +116,42 @@
     </nav>
 
     <div class="container mt-5 mb-5">
-      <div class="d-flex justify-content-center mb-5">
+      <div
+        class="nav-tabs-scroll d-flex justify-content-start justify-content-md-center mb-4 mb-md-5 px-3 px-md-0"
+      >
         <div
           class="bg-white shadow-sm rounded-pill p-1 d-inline-flex gap-1 border border-light-subtle"
         >
           <button
             id="btn-overview"
-            class="btn btn-primary rounded-pill px-4 py-2 fw-medium nav-section-btn border-0 transition"
+            class="btn btn-primary rounded-pill px-3 px-md-4 py-2 fw-medium nav-section-btn border-0 transition text-nowrap"
             onclick="switchSection('overview')"
           >
-            <i class="bi bi-grid-1x2-fill me-2 opacity-75"></i>Overview
+            <i class="bi bi-grid-1x2-fill me-1 me-md-2 opacity-75"></i>Overview
           </button>
 
           <button
             id="btn-vendors"
-            class="btn bg-transparent text-secondary rounded-pill px-4 py-2 fw-medium nav-section-btn border-0 transition"
+            class="btn bg-transparent text-secondary rounded-pill px-3 px-md-4 py-2 fw-medium nav-section-btn border-0 transition text-nowrap"
             onclick="switchSection('vendors')"
           >
-            <i class="bi bi-shop me-2 opacity-75"></i>Vendors
+            <i class="bi bi-shop me-1 me-md-2 opacity-75"></i>Vendors
           </button>
 
           <button
             id="btn-orders"
-            class="btn bg-transparent text-secondary rounded-pill px-4 py-2 fw-medium nav-section-btn border-0 transition"
+            class="btn bg-transparent text-secondary rounded-pill px-3 px-md-4 py-2 fw-medium nav-section-btn border-0 transition text-nowrap"
             onclick="switchSection('orders')"
           >
-            <i class="bi bi-cart-check-fill me-2 opacity-75"></i>Orders
+            <i class="bi bi-cart-check-fill me-1 me-md-2 opacity-75"></i>Orders
+          </button>
+
+          <button
+            id="btn-categories"
+            class="btn bg-transparent text-secondary rounded-pill px-3 px-md-4 py-2 fw-medium nav-section-btn border-0 transition text-nowrap"
+            onclick="switchSection('categories')"
+          >
+            <i class="bi bi-grid me-1 me-md-2 opacity-75"></i>Categories
           </button>
         </div>
       </div>
@@ -399,6 +409,78 @@
                     class="pagination align-items-center gap-2 mb-0 border-0"
                     id="pagination"
                   ></ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="section-categories" class="admin-section d-none">
+        <div class="row g-4 mb-5">
+          <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4">
+              <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                <h5 class="fw-bold mb-0">
+                  <i class="bi bi-tags text-primary me-2"></i>Add Category
+                </h5>
+              </div>
+              <div class="card-body p-4">
+                <form id="addCategoryForm">
+                  <div class="form-floating mb-4">
+                    <input
+                      type="text"
+                      id="cat-name"
+                      class="form-control rounded-3"
+                      placeholder="Category Name"
+                      required
+                    />
+                    <label for="cat-name">Category Name</label>
+                  </div>
+                  <button
+                    type="submit"
+                    class="btn btn-primary w-100 rounded-pill py-2 fw-medium shadow-sm"
+                  >
+                    Create Category
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+              <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                <h5 class="fw-bold mb-0">
+                  <i class="bi bi-grid text-primary me-2"></i>Categories
+                  Directory
+                </h5>
+              </div>
+              <div class="card-body p-4">
+                <div
+                  class="table-responsive"
+                  style="max-height: 300px; overflow-y: auto"
+                >
+                  <table class="table table-hover align-middle border-top">
+                    <thead class="table-light sticky-top">
+                      <tr>
+                        <th
+                          class="text-muted fw-semibold py-3 border-0 rounded-start"
+                        >
+                          ID
+                        </th>
+                        <th class="text-muted fw-semibold py-3 border-0">
+                          Name
+                        </th>
+                        <th
+                          class="text-muted fw-semibold py-3 border-0 rounded-end text-end"
+                        >
+                          Action
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody id="categories-list" class="border-top-0"></tbody>
+                  </table>
                 </div>
               </div>
             </div>
