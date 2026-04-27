@@ -41,4 +41,8 @@ def create_app():
 
     app.register_blueprint(notifications_bp, url_prefix="/api/notifications")
 
+    from .vendor import vendor_bp
+
+    app.register_blueprint(vendor_bp, url_prefix="/api/vendor")
+
     return app
